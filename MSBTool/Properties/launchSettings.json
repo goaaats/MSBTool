@@ -2,7 +2,7 @@
   "profiles": {
     "MSBTool": {
       "commandName": "Project",
-      "commandLineArgs": "create test_stones.mid"
+      "commandLineArgs": "create bgm_score_001.mid"
     }
   }
 }

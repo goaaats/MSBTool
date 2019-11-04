@@ -221,7 +221,7 @@ namespace MSBTool
 
         private MsbBar GetLastBar()
         {
-            return ScoreEntries.OrderByDescending(i => i.Bars.Last().Offset).First().Bars.Last();
+            return ScoreEntries.OrderByDescending(i => i.Bars.Last().Offset + i.Bars.Last().Length).First().Bars.Last();
         }
 
         private int CalculateFileLength()
