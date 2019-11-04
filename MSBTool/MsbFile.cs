@@ -131,6 +131,8 @@ namespace MSBTool
             var lastBar = GetLastBar();
             var musicLength = lastBar.Offset + lastBar.Length;
 
+            var scoreOffsets = new List<uint>();
+
             using (var stream = new MemoryStream(length))
             {
                 using (var writer = new BinaryWriter(stream))
@@ -178,6 +180,8 @@ namespace MSBTool
 
                     foreach (var scoreEntry in ScoreEntries)
                     {
+                        scoreOffsets.Add((uint) stream.Position);
+
                         // SCORE HEADER
                         writer.Write((uint) 0x01101001); // TODO: figure out what these mean
 
@@ -197,6 +201,17 @@ namespace MSBTool
 
                             writer.Write((uint)0x00000000);
                         }
+                    }
+
+                    // SCORE OFFSETS
+
+                    stream.Position = 0x10;
+
+                    writer.Write((uint) 0x30); // Extended header and BPM header size
+
+                    foreach (var scoreOffset in scoreOffsets)
+                    {
+                        writer.Write(scoreOffset);
                     }
 
                     return stream.GetBuffer();
