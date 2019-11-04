@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace MSBTool
@@ -126,7 +127,10 @@ namespace MSBTool
         // This is just terrible but it works
         public byte[] GetBytes()
         {
-            using (var stream = new MemoryStream(0x21C0))
+            var length = CalculateFileLength();
+            var headerLength = length + (length - 0x10) + 1;
+
+            using (var stream = new MemoryStream(length))
             {
                 using (var writer = new BinaryWriter(stream))
                 {
@@ -197,6 +201,15 @@ namespace MSBTool
                     return stream.GetBuffer();
                 }
             }
+        }
+
+        private int CalculateFileLength()
+        {
+            var length = 0x50 + // File + BPM header
+                         ScoreEntries.Count * 0x10 + // Score headers
+                         ScoreEntries.Sum(scoreEntry => scoreEntry.Bars.Count * 0x10); // Notes
+
+            return length;
         }
     }
 }

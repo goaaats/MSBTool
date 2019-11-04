@@ -47,11 +47,13 @@ namespace MSBTool
             //midiFile.Write("test.mid");
             */
 
-            var midiFile = MidiFile.Read("test_stones.mid");
+            file.BpmEntries[0].Bpm = 120;
+
+            var midiFile = MidiFile.Read("test_fd.mid");
 
             var notes = midiFile.GetTrackChunks().First().GetNotes();
 
-            for (var i = 0; i < notes.Count(); i++)
+            for (var i = 0; i < file.ScoreEntries[0].Bars.Count(); i++)
             {
                 var note = notes.ElementAt(i);
 
