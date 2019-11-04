@@ -33,8 +33,8 @@ namespace MSBTool
             public float Bpm { get; set; }
         }
 
-        public List<MsbScore> ScoreEntries { get; private set; }
-        public List<MsbBpm> BpmEntries { get; private set; }
+        public List<MsbScore> ScoreEntries { get; set; }
+        public List<MsbBpm> BpmEntries { get; set; }
 
         public static MsbFile Read(Stream stream)
         {

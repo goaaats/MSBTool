@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MSBTool": {
+      "commandName": "Project",
+      "commandLineArgs": "create test_stones.mid"
+    }
+  }
+}
