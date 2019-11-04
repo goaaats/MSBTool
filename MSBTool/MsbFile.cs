@@ -128,7 +128,8 @@ namespace MSBTool
         public byte[] GetBytes()
         {
             var length = CalculateFileLength();
-            var headerLength = length + (length - 0x10) + 1;
+            var lastBar = GetLastBar();
+            var musicLength = lastBar.Offset + lastBar.Length;
 
             using (var stream = new MemoryStream(length))
             {
@@ -142,7 +143,7 @@ namespace MSBTool
 
                     writer.Write((ushort) 0x0010); // Base header len
 
-                    writer.Write((uint) 105714); // Music length, lets hardcode for now
+                    writer.Write((uint) musicLength); // Music length, lets hardcode for now
 
                     writer.Write((uint) 0x00000000);
 
@@ -201,6 +202,11 @@ namespace MSBTool
                     return stream.GetBuffer();
                 }
             }
+        }
+
+        private MsbBar GetLastBar()
+        {
+            return ScoreEntries.OrderByDescending(i => i.Bars.Last().Offset).First().Bars.Last();
         }
 
         private int CalculateFileLength()
