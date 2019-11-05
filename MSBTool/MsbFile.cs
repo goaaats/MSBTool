@@ -145,7 +145,7 @@ namespace MSBTool
 
                     writer.Write((ushort) 0x0010); // Base header len
 
-                    writer.Write((uint) musicLength); // Music length, lets hardcode for now
+                    writer.Write((uint) musicLength); // Music length
 
                     writer.Write((uint) 0x00000000);
 

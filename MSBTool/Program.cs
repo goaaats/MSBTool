@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using xivModdingFramework.General.Enums;
+using xivModdingFramework.SqPack.FileTypes;
+using Index = xivModdingFramework.SqPack.FileTypes.Index;
 using Note = Melanchall.DryWetMidi.Smf.Interaction.Note;
 
 namespace MSBTool
@@ -17,7 +20,7 @@ namespace MSBTool
         {
             if (args.Length < 2)
             {
-                Console.WriteLine("MSBTool - Import and export FFXIV Perform note sheets\n\nUsage:\nEXPORT TO MIDI: MSBTool.exe export [PATH TO MSB FILE]\nCREATE MSB: MSBTool.exe create [PATH TO MIDI]\nIMPORT TO GAME: MSBTool.exe import [PATH TO MIDI] [SLOT NUMBER IN-GAME]");
+                Console.WriteLine("MSBTool - Import and export FFXIV Perform note sheets\n\nUsage:\nEXPORT TO MIDI: MSBTool.exe export [PATH TO MSB FILE]\nCREATE MSB: MSBTool.exe create [PATH TO MIDI]\nIMPORT TO GAME: MSBTool.exe import [PATH TO MIDI] [PATH TO GAME INSTALL] [SLOT NUMBER IN-GAME]");
                 return;
             }
 
@@ -28,13 +31,13 @@ namespace MSBTool
                     break;
                 case "create":
                 {
-                    var data = CreateMsb(args[1]);
+                    var data = CreateMsbFromMidi(args[1]);
 
                     File.WriteAllBytes(Path.GetFileNameWithoutExtension(args[1]) + ".msb", data);
                 }
                     break;
                 case "import":
-                    //ImportMsb(args[1], int.Parse(args[2]));
+                    ImportMsb(args[1], args[3], int.Parse(args[2]));
                     break;
             }
 
@@ -58,7 +61,7 @@ namespace MSBTool
 
                 foreach (var bar in score.Bars)
                 {
-                    scoreNotes.Add(new Note(new SevenBitNumber((byte)(bar.Note + 30)), bar.Length, bar.Offset));
+                    scoreNotes.Add(new Note(new SevenBitNumber((byte)(bar.Note + 24)), bar.Length, bar.Offset));
                 }
 
                 track.AddNotes(scoreNotes);
@@ -71,11 +74,11 @@ namespace MSBTool
             midiFile.Write(Path.GetFileNameWithoutExtension(path) + ".mid");
         }
 
-        private static byte[] CreateMsb(string path)
+        private static byte[] CreateMsbFromMidi(string path)
         {
             var file = new MsbFile
             {
-                BpmEntries = new List<MsbFile.MsbBpm> {new MsbFile.MsbBpm {Bpm = 105, Measure1 = 4, Measure2 = 4}},
+                BpmEntries = new List<MsbFile.MsbBpm> {new MsbFile.MsbBpm {Bpm = 60, Measure1 = 4, Measure2 = 4}},
                 ScoreEntries = new List<MsbFile.MsbScore>()
             };
 
@@ -95,11 +98,11 @@ namespace MSBTool
                 {
                     var note = notes.ElementAt(i);
 
-                    Console.WriteLine($"{note.NoteNumber - 30} - {note.Time} - {note.Length}");
+                    Console.WriteLine($"{note.NoteNumber - 24} - {note.Time} - {note.Length}");
 
                     var msbBar = new MsbFile.MsbBar();
 
-                    msbBar.Note = (byte)(note.NoteNumber - 30);
+                    msbBar.Note = (byte)(note.NoteNumber - 24);
                     msbBar.Length = (uint)note.Length;
                     msbBar.Offset = (uint)note.Time;
 
@@ -110,6 +113,27 @@ namespace MSBTool
             }
 
             return file.GetBytes();
+        }
+
+        public static void ImportMsb(string path, string gamePath, int slot)
+        {
+            var msbData = CreateMsbFromMidi(path);
+
+            var index = new Index(new DirectoryInfo(gamePath));
+            var dat = new Dat(new DirectoryInfo(gamePath));
+
+
+            if (index.IsIndexLocked(XivDataFile._07_Sound))
+            {
+                Console.WriteLine("Could not access index file. Game may be open.");
+                return;
+            }
+
+            var offset = dat.ImportType2Data(msbData, $"Custom Perform Score for slot {slot:D3}",
+                $"sound/score/bgm_score_{slot:D3}.msb", "Custom Performance", "MSBTool").GetAwaiter().GetResult();
+
+            index.UpdateIndexDatCount(XivDataFile._07_Sound, 2);
+            Console.WriteLine($"Custom performance score for slot {slot:D3} was successfully written to {offset:X}");
         }
     }
 }

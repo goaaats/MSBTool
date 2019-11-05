@@ -2,7 +2,7 @@
   "profiles": {
     "MSBTool": {
       "commandName": "Project",
-      "commandLineArgs": "create bgm_score_001.mid"
+      "commandLineArgs": "import test_stones.mid 3 \"C:\\Program Files (x86)\\SquareEnix\\FINAL FANTASY XIV - A Realm Reborn\\\""
     }
   }
 }
