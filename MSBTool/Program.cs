@@ -14,7 +14,7 @@ using Note = Melanchall.DryWetMidi.Smf.Interaction.Note;
 
 namespace MSBTool
 {
-    class Program
+    public static class Program
     {
         static void Main(string[] args)
         {
@@ -115,7 +115,7 @@ namespace MSBTool
             return file.GetBytes();
         }
 
-        public static void ImportMsb(string path, string gamePath, int slot)
+        public static string ImportMsb(string path, string gamePath, int slot)
         {
             var msbData = CreateMsbFromMidi(path);
 
@@ -126,14 +126,15 @@ namespace MSBTool
             if (index.IsIndexLocked(XivDataFile._07_Sound))
             {
                 Console.WriteLine("Could not access index file. Game may be open.");
-                return;
+                return "Could not access index file. Game may be open.";
             }
 
-            var offset = dat.ImportType2Data(msbData, $"Custom Perform Score for slot {slot:D3}",
-                $"sound/score/bgm_score_{slot:D3}.msb", "Custom Performance", "MSBTool").GetAwaiter().GetResult();
+            var offset = dat.ImportType2DataNP(msbData, $"Custom Perform Score for slot {slot:D3}",
+                $"sound/score/bgm_score_{slot:D3}.msb", "Custom Performance", "MSBTool");
 
             index.UpdateIndexDatCount(XivDataFile._07_Sound, 2);
             Console.WriteLine($"Custom performance score for slot {slot:D3} was successfully written to {offset:X}");
+            return $"Custom performance score for slot {slot:D3} was successfully written to {offset:X}";
         }
     }
 }
