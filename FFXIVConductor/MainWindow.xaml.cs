@@ -1,19 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.WindowsAPICodePack.Dialogs;
+using MSBTool.Common;
+using System;
+using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using MSBTool;
 
 
 namespace FFXIVConductor
@@ -38,6 +27,7 @@ namespace FFXIVConductor
                 midiButton1.IsEnabled = true;
                 midiButton2.IsEnabled = true;
                 midiButton3.IsEnabled = true;
+                midiExportButton.IsEnabled = true;
             }
         }
 
@@ -47,10 +37,39 @@ namespace FFXIVConductor
             CommonOpenFileDialog browser = new CommonOpenFileDialog();
             browser.Title = "Select Midi";
             browser.Filters.Add(new CommonFileDialogFilter("Midi", ".mid"));
-            if(browser.ShowDialog() == CommonFileDialogResult.Ok)
+            if (browser.ShowDialog() == CommonFileDialogResult.Ok)
             {
-                outputText.Text = Program.ImportMsb(browser.FileName, FFXIVPath, id);
+                try
+                {
+                    MsbOperations.ImportMsb(browser.FileName, FFXIVPath, id);
+                }
+                catch (IOException)
+                {
+                    MessageBox.Show("Could not access game data. Is the game open?", "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An error occured. Please report this error.\n\n" + ex, "Error", MessageBoxButton.OK,
+                        MessageBoxImage.Error);
+                }
+
+                MessageBox.Show($"Import to slot {id:D3} successful.", "OK!", MessageBoxButton.OK,
+                    MessageBoxImage.Asterisk);
             }
+        }
+
+        private void MidiExportButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            Directory.CreateDirectory("exports");
+
+            for (var i = 1; i < 4; i++)
+            {
+                MsbOperations.ExportMsb(i, FFXIVPath, Path.Combine("exports", $"score_{i:D3}.mid"));
+            }
+
+            MessageBox.Show("Export successful. See the /exports folder.", "OK!", MessageBoxButton.OK,
+                MessageBoxImage.Asterisk);
         }
     }
 }

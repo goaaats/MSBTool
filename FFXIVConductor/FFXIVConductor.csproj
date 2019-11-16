@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MSBTool\MSBTool.csproj" />
+    <ProjectReference Include="..\MSBTool.Common\MSBTool.Common.csproj" />
   </ItemGroup>
 
 </Project>
