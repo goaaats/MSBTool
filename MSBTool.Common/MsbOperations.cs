@@ -141,7 +141,7 @@ namespace MSBTool.Common
                     if((int)note.NoteNumber < 48 || (int)note.NoteNumber > 84)
                     {
                         throw new Exception("Your Midi contains notes outside the range of FFXIV's playable range. " +
-                            "Please enter only notes between C3 and C6 (inclusive). Detected incorrect range at Note#" + (i+1));
+                            $"Please enter only notes between C3 and C6 (inclusive). Detected incorrect range at Note#{i + 1} in Track#{trackIndex + 1}");
                     }
                     
                     //Detects note overlaps and chops the length to be strictly < the next note's time.
