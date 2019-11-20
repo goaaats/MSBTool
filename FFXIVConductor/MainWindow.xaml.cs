@@ -45,7 +45,7 @@ namespace FFXIVConductor
                 }
                 catch (IOException)
                 {
-                    MessageBox.Show("Could not access game data. Please close FFXIV and run program as admin", "Error", MessageBoxButton.OK,
+                    MessageBox.Show("Could not access game data. Please close FFXIV and run FFXIVConductor as admin", "Error", MessageBoxButton.OK,
                         MessageBoxImage.Error);
                     return;
                 }
