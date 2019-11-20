@@ -63,15 +63,38 @@ namespace MSBTool.Common
 
         public static byte[] CreateMsbFromMidi(string path)
         {
-            var file = new MsbFile
-            {
-                BpmEntries = new List<MsbFile.MsbBpm> { new MsbFile.MsbBpm { Bpm = 104, Measure1 = 4, Measure2 = 4 } },
-                ScoreEntries = new List<MsbFile.MsbScore>()
-            };
-
-            // Hardcoded for now
 
             var midiFile = MidiFile.Read(path);
+            while(midiFile.Chunks.Count < 7)
+            {
+                TrackChunk chunk = new TrackChunk();
+                List<Note> dummyTrack = new List<Note>();
+                dummyTrack.Add(new Note(new SevenBitNumber((byte)60), 1000, 1));
+                chunk.AddNotes(dummyTrack);
+                midiFile.Chunks.Add(chunk);
+            }
+
+            ValueChange<Tempo> tempo = midiFile.GetTempoMap().Tempo.FirstOrDefault<ValueChange<Tempo>>();
+            float bpm = 100;
+            if(tempo != null)
+            {
+                bpm = (float)tempo.Value.BeatsPerMinute;
+            }
+
+            ValueChange<TimeSignature> ts = midiFile.GetTempoMap().TimeSignature.FirstOrDefault<ValueChange<TimeSignature>>();
+            int numerator = 4;
+            int denominator = 4;
+            if(ts != null)
+            {
+                numerator = ts.Value.Numerator;
+                denominator = ts.Value.Denominator;
+            }
+
+            var file = new MsbFile
+            {
+                BpmEntries = new List<MsbFile.MsbBpm> { new MsbFile.MsbBpm { Bpm = bpm, Measure1 = (byte)numerator, Measure2 = (byte)denominator } },
+                ScoreEntries = new List<MsbFile.MsbScore>()
+            };
 
             var trackChunks = midiFile.GetTrackChunks();
 

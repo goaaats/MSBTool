@@ -45,13 +45,15 @@ namespace FFXIVConductor
                 }
                 catch (IOException)
                 {
-                    MessageBox.Show("Could not access game data. Is the game open?", "Error", MessageBoxButton.OK,
+                    MessageBox.Show("Could not access game data. Please close FFXIV and run program as admin", "Error", MessageBoxButton.OK,
                         MessageBoxImage.Error);
+                    return;
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show("An error occured. Please report this error.\n\n" + ex, "Error", MessageBoxButton.OK,
                         MessageBoxImage.Error);
+                    return;
                 }
 
                 MessageBox.Show($"Import to slot {id:D3} successful.", "OK!", MessageBoxButton.OK,
