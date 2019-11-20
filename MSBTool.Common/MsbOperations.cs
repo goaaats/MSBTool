@@ -16,6 +16,7 @@ namespace MSBTool.Common
 {
     public class MsbOperations
     {
+
         public static void ExportMsb(string filePath, string outPath)
         {
             ExportMsb(File.Open(filePath, FileMode.Open), outPath);
@@ -65,6 +66,19 @@ namespace MSBTool.Common
         {
 
             var midiFile = MidiFile.Read(path);
+
+            //Ensures every chunk in the midi has at least 1 note
+            foreach (var chunk in midiFile.GetTrackChunks())
+            {
+                if(chunk.GetNotes().Count() == 0)
+                {
+                    List<Note> dummyTrack = new List<Note>();
+                    dummyTrack.Add(new Note(new SevenBitNumber((byte)60), 1000, 1));
+                    chunk.AddNotes(dummyTrack);
+                }
+            }
+
+            //Ensures there are at least 7 chunks in the midi
             while(midiFile.Chunks.Count < 7)
             {
                 TrackChunk chunk = new TrackChunk();
@@ -74,6 +88,13 @@ namespace MSBTool.Common
                 midiFile.Chunks.Add(chunk);
             }
 
+            //Ensures there are no more than 7 chunks in the midi
+            while(midiFile.GetTrackChunks().Count() > 7)
+            {
+                midiFile.Chunks.RemoveAt(7);
+            }
+
+            //Reads BPM from midi if possible; if no BPM is declared, defaults to 100
             ValueChange<Tempo> tempo = midiFile.GetTempoMap().Tempo.FirstOrDefault<ValueChange<Tempo>>();
             float bpm = 100;
             if(tempo != null)
@@ -81,6 +102,7 @@ namespace MSBTool.Common
                 bpm = (float)tempo.Value.BeatsPerMinute;
             }
 
+            //Assigns time signature based on first midi time signature event, or defaults to 4/4
             ValueChange<TimeSignature> ts = midiFile.GetTempoMap().TimeSignature.FirstOrDefault<ValueChange<TimeSignature>>();
             int numerator = 4;
             int denominator = 4;
@@ -98,9 +120,17 @@ namespace MSBTool.Common
 
             var trackChunks = midiFile.GetTrackChunks();
 
+            //If the first chunk contains only one note (dummy chunk or empty chunk)
+            //Instead, re-order list to sort the list with the most notes into the first slot.
+            if(trackChunks.ElementAt(0).GetNotes().Count() == 1)
+            {
+                trackChunks = trackChunks.OrderByDescending(c => c.GetNotes().Count());
+            }
+
             for (var trackIndex = 0; trackIndex < trackChunks.Count(); trackIndex++)
             {
                 var notes = trackChunks.ElementAt(trackIndex).GetNotes();
+                notes = notes.OrderBy(c => c.Time);
 
                 var msbScore = new MsbFile.MsbScore { Bars = new List<MsbFile.MsbBar>() };
 
@@ -108,15 +138,32 @@ namespace MSBTool.Common
                 {
                     var note = notes.ElementAt(i);
 
-                    Console.WriteLine($"{note.NoteNumber - 24} - {note.Time} - {note.Length}");
+                    if((int)note.NoteNumber < 48 || (int)note.NoteNumber > 84)
+                    {
+                        throw new Exception("Your Midi contains notes outside the range of FFXIV's playable range. " +
+                            "Please enter only notes between C3 and C6 (inclusive). Detected incorrect range at Note#" + (i+1));
+                    }
+                    
+                    //Detects note overlaps and chops the length to be strictly < the next note's time.
+                    var lengthChopOffset = 0L;
+                    if(i != notes.Count() - 1)
+                    {
+                        var nextNote = notes.ElementAt(i + 1);
+                        if(note.Time + note.Length > nextNote.Time)
+                        {
+                            lengthChopOffset = (note.Time + note.Length) - nextNote.Time;
+                        }
+                    }
 
                     var msbBar = new MsbFile.MsbBar();
 
                     msbBar.Note = (byte)(note.NoteNumber - 24);
-                    msbBar.Length = (uint)note.Length;
+                    msbBar.Length = (uint)(note.Length - lengthChopOffset);
                     msbBar.Offset = (uint)note.Time;
 
                     msbScore.Bars.Add(msbBar);
+
+                    
                 }
 
                 file.ScoreEntries.Add(msbScore);
