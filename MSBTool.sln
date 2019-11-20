@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSBTool", "MSBTool\MSBTool.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "xivModdingFramework", "lib\xivModdingFramework\xivModdingFramework\xivModdingFramework.csproj", "{99D79AB9-9AB6-4C3A-B46F-1BD3A137AA32}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFXIVConductor", "FFXIVConductor\FFXIVConductor.csproj", "{6699A12B-3F10-4A49-98CA-FBE5A2684FDB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MSBTool.Common", "MSBTool.Common\MSBTool.Common.csproj", "{0AA12522-C678-4B6C-B1A0-550C276EA154}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MSBTool.Common", "MSBTool.Common\MSBTool.Common.csproj", "{0AA12522-C678-4B6C-B1A0-550C276EA154}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FFXIVConductor", "FFXIVConductor\FFXIVConductor.csproj", "{8718EDCB-F19E-47AE-866C-D1B3E8CEF668}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,14 +25,14 @@ Global
 		{99D79AB9-9AB6-4C3A-B46F-1BD3A137AA32}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{99D79AB9-9AB6-4C3A-B46F-1BD3A137AA32}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{99D79AB9-9AB6-4C3A-B46F-1BD3A137AA32}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6699A12B-3F10-4A49-98CA-FBE5A2684FDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6699A12B-3F10-4A49-98CA-FBE5A2684FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6699A12B-3F10-4A49-98CA-FBE5A2684FDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6699A12B-3F10-4A49-98CA-FBE5A2684FDB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0AA12522-C678-4B6C-B1A0-550C276EA154}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0AA12522-C678-4B6C-B1A0-550C276EA154}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AA12522-C678-4B6C-B1A0-550C276EA154}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AA12522-C678-4B6C-B1A0-550C276EA154}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8718EDCB-F19E-47AE-866C-D1B3E8CEF668}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8718EDCB-F19E-47AE-866C-D1B3E8CEF668}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8718EDCB-F19E-47AE-866C-D1B3E8CEF668}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8718EDCB-F19E-47AE-866C-D1B3E8CEF668}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
